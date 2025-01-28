@@ -17,6 +17,7 @@ func NextDate(now time.Time, date string, repeat string) (string, error) {
 
 	if len(repeat) == 0 {
 		fmt.Println("delete task from db")
+		return "", fmt.Errorf("Repeat is empty. Length of repeat must be greater than 0")
 	} else {
 
 		// cleanedRepeat := strings.ReplaceAll(repeat, ",", "")
@@ -60,7 +61,16 @@ func NextDate(now time.Time, date string, repeat string) (string, error) {
 			return nextDate.Format("20060102"), nil
 
 		case "m":
-			//переписал разбиение repeat, дописать кейс
+			if len(arrOfRuleAndDates) < 2 {
+				return "", fmt.Errorf("repeat doesnt valid for rule 'm'")
+			}
+			months, err := parseMonthesOfRule(arrOfRuleAndDates[1:])
+			if err != nil {
+				return "", err
+			}
+			nextDate = getNextMonthDate(now, months)
+			return nextDate.Format("20060102"), nil
+			//3. Проверить после удаления заглушки
 		default:
 			fmt.Println("wrong rule")
 		}
@@ -94,6 +104,39 @@ func getNextWeekday(now time.Time, weekdays []int) time.Time {
 		}
 		now = now.AddDate(0, 0, 1)
 	}
+}
+
+func parseMonthesOfRule(data []string) ([]int, error) {
+	days := strings.Split(data[0], ",")
+	//1. Дописать вызов функции для обработки дней days
+	parsedMonths := []int{}
+	if len(data) > 1 {
+		months := strings.Split(data[1], ",")
+		parsedMonths = parseStringMonthToInt(months)
+		for _, m := range parsedMonths {
+			if m < 1 || m > 12 {
+				return nil, fmt.Errorf("month must be > 1 or < 12, but now its: %d", m)
+			}
+		}
+	}
+	return parsedMonths, nil
+}
+
+func parseStringMonthToInt(data []string) []int {
+	months := []int{}
+	for _, val := range data {
+		v, err := strconv.Atoi(val)
+		if err == nil {
+			months = append(months, v)
+		}
+
+	}
+	return months
+}
+
+func getNextMonthDate(now time.Time, days []int) time.Time {
+	return now
+	//Дописать заглушку
 }
 func main() {
 
