@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	init_db "github.com/ilyaosipenkov/practicum_final_project/pkg/db"
+	handlers "github.com/ilyaosipenkov/practicum_final_project/pkg/handlers"
 )
 
 func main() {
@@ -35,6 +36,8 @@ func main() {
 	r.Get("/login.html", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "./web/login.html")
 	})
+
+	r.Get("/api/nextdate", handlers.NextDateHandler)
 
 	fmt.Println("port running on :7540")
 	if err := http.ListenAndServe(":7540", r); err != nil {
