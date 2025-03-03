@@ -1,4 +1,4 @@
-package repeat
+package services
 
 import (
 	"errors"
@@ -12,12 +12,12 @@ func NextDate(now time.Time, date string, repeat string) (string, error) {
 
 	parsedDate, err := time.Parse("20060102", date)
 	if err != nil {
-		return "", fmt.Errorf("Invalid parse of date: %v", err)
+		return "", fmt.Errorf("invalid parse of date: %v", err)
 	}
 
 	if len(repeat) == 0 {
 		fmt.Println("delete task from db")
-		return "", fmt.Errorf("Repeat is empty. Length of repeat must be greater than 0")
+		return "", fmt.Errorf("repeat is empty. Length of repeat must be greater than 0")
 	}
 
 	arrOfRuleAndDates := strings.Fields(repeat)
