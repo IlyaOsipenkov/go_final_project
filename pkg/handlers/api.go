@@ -33,6 +33,23 @@ func TaskHandler(db *sql.DB) http.HandlerFunc {
 	}
 }
 
+func TasksHandler(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, `{"error":"Invalid method"}`, http.StatusMethodNotAllowed)
+			return
+		}
+		tasks, err := services.GetTasks(db, 30)
+		if err != nil {
+			http.Error(w, fmt.Sprintf(`{"error":"Error of getting tasks: %s"}`, err.Error()), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("content-type", "application/json; charset=UTF-8")
+		json.NewEncoder(w).Encode(map[string]any{"tasks": tasks})
+	}
+}
+
 func handleAddTask(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 

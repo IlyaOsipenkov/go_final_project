@@ -39,6 +39,7 @@ func main() {
 
 	r.Get("/api/nextdate", handlers.NextDateHandler)
 	r.Post("/api/task", handlers.TaskHandler(dbInstance))
+	r.Get("/api/tasks", handlers.TasksHandler(dbInstance))
 
 	fmt.Println("port running on :7540")
 	if err := http.ListenAndServe(":7540", r); err != nil {
