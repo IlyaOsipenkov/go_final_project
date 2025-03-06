@@ -39,10 +39,17 @@ func TasksHandler(db *sql.DB) http.HandlerFunc {
 			http.Error(w, `{"error":"Invalid method"}`, http.StatusMethodNotAllowed)
 			return
 		}
-		tasks, err := services.GetTasks(db, 30)
+
+		search := r.URL.Query().Get("search")
+
+		tasks, err := services.GetTasks(db, search, 30)
 		if err != nil {
 			http.Error(w, fmt.Sprintf(`{"error":"Error of getting tasks: %s"}`, err.Error()), http.StatusInternalServerError)
 			return
+		}
+
+		if tasks == nil {
+			tasks = []services.Task{}
 		}
 
 		w.Header().Set("content-type", "application/json; charset=UTF-8")

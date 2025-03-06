@@ -2,7 +2,7 @@ package services
 
 import (
 	"database/sql"
-	"fmt"
+	"time"
 )
 
 type Task struct {
@@ -13,15 +13,38 @@ type Task struct {
 	Repeat  string `json:"repeat"`
 }
 
-func GetTasks(db *sql.DB, limit int) ([]Task, error) {
-	query := fmt.Sprintf(`
+func GetTasks(db *sql.DB, search string, limit int) ([]Task, error) {
+	var query string
+	var args []any
+
+	parsedDate, err := time.Parse("02.01.2006", search)
+	if err == nil {
+		query = `
 		SELECT id, date, title, comment, repeat
 		FROM scheduler
-		ORDER by date ASC
-		LIMIT %d
-	`, limit)
+		WHERE CAST(date AS TEXT) = ?
+		ORDER BY date ASC
+		LIMIT ?`
+		args = append(args, parsedDate.Format("20060102"), limit)
+	} else if search != "" {
+		query = `
+		SELECT id, date, title, comment, repeat
+		FROM scheduler
+		WHERE title LIKE ? OR comment LIKE ?
+		ORDER BY date ASC
+		LIMIT ?`
+		likeParam := "%" + search + "%"
+		args = append(args, likeParam, likeParam, limit)
+	} else {
+		query = `
+		SELECT id, date, title, comment, repeat
+		FROM scheduler
+		ORDER BY date ASC
+		LIMIT ?`
+		args = append(args, limit)
+	}
 
-	rows, err := db.Query(query)
+	rows, err := db.Query(query, args...)
 	if err != nil {
 		return nil, err
 	}
