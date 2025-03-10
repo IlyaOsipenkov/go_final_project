@@ -39,7 +39,11 @@ func main() {
 
 	r.Get("/api/nextdate", handlers.NextDateHandler)
 	r.Post("/api/task", handlers.TaskHandler(dbInstance))
+	r.Get("/api/task", handlers.TaskHandler(dbInstance))
+	r.Put("/api/task", handlers.TaskHandler(dbInstance))
 	r.Get("/api/tasks", handlers.TasksHandler(dbInstance))
+	r.Post("/api/task/done", handlers.TaskDoneHandler(dbInstance))
+	r.Delete("/api/task", handlers.DeleteTaskHandler(dbInstance))
 
 	fmt.Println("port running on :7540")
 	if err := http.ListenAndServe(":7540", r); err != nil {
