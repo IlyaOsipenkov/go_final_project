@@ -65,6 +65,7 @@ func TestApp(t *testing.T) {
 		if err != nil {
 			return err
 		}
+
 		assert.Equal(t, len(fbody), len(body), `сервер возвращает для %s данные другого размера`, fname)
 		return nil
 	}

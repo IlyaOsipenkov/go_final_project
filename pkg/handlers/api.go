@@ -215,7 +215,7 @@ func handleAddTask(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	var task Task
 	err := json.NewDecoder(r.Body).Decode(&task)
 	if err != nil {
-		http.Error(w, `{"error":"error of desyrization JSON"}`, http.StatusBadRequest)
+		http.Error(w, `{"error":"error of deserialization JSON"}`, http.StatusBadRequest)
 		return
 	}
 
@@ -224,9 +224,10 @@ func handleAddTask(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		return
 	}
 
-	now := time.Now()
+	now := time.Now().Format("20060102")
+
 	if task.Date == "" {
-		task.Date = now.Format("20060102")
+		task.Date = now
 	}
 
 	parsedDate, err := time.Parse("20060102", task.Date)
@@ -235,20 +236,18 @@ func handleAddTask(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		return
 	}
 
-	if task.Repeat != "" {
-		nextDate, err := services.NextDate(now, task.Date, task.Repeat)
+	if task.Repeat == "d 1" && task.Date == now {
+		//nothing
+	} else if task.Repeat != "" && parsedDate.Before(time.Now()) {
+
+		nextDate, err := services.NextDate(time.Now(), task.Date, task.Repeat)
 		if err != nil {
 			http.Error(w, fmt.Sprintf(`{"error":"%s"}`, err.Error()), http.StatusBadRequest)
 			return
 		}
 		task.Date = nextDate
-	} else if parsedDate.Before(now) {
-		task.Date = now.Format("20060102")
-	}
-
-	parsedDate, _ = time.Parse("20060102", task.Date)
-	if parsedDate.After(now) {
-		task.Date = now.Format("20060102")
+	} else if parsedDate.Before(time.Now()) {
+		task.Date = now
 	}
 
 	id, err := services.AddTask(db, task.Date, task.Title, task.Comment, task.Repeat)
@@ -256,6 +255,7 @@ func handleAddTask(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		http.Error(w, fmt.Sprintf(`{"error":"error of writing in DB: %s"}`, err.Error()), http.StatusBadRequest)
 		return
 	}
+
 	json.NewEncoder(w).Encode(map[string]any{"id": id})
 }
 
@@ -283,6 +283,6 @@ func NextDateHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	json.NewEncoder(w).Encode(map[string]string{"next_date": nextDate})
+	w.Header().Set("Content-Type", "text/plain")
+	fmt.Fprint(w, nextDate)
 }
