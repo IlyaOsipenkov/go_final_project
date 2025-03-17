@@ -10,6 +10,7 @@ func IsValidRepeat(repeat string) bool {
 	if repeat == "" {
 		return true
 	}
+	//Здравствуйте, можно ли сделать как-то кроме регулярки?
 	validRepeat := regexp.MustCompile(`^(d \d{1,3}|y|w ([1-7],?)+|m (-?\d{1,2},?)+(\s([1-9]|1[0-2],?)*)?)?$`)
 	return validRepeat.MatchString(repeat)
 }

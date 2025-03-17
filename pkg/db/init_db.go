@@ -19,30 +19,30 @@ func InitializeDB() *sql.DB {
 
 		err = os.Mkdir(dbDir, 0755)
 		if err != nil {
-			log.Fatal("Error creating database directory: ", err)
+			log.Fatal("error creating database directory: ", err)
 		}
 	}
 
 	if _, err := os.Stat(dbFile); os.IsNotExist(err) {
 		file, err := os.Create(dbFile)
 		if err != nil {
-			log.Fatal("Error creating database file: ", err)
+			log.Fatal("error creating database file: ", err)
 		}
 		file.Close()
 
 		err = createTable(dbFile)
 		if err != nil {
-			log.Fatal("Error initializing database table: ", err)
+			log.Fatal("error initializing database table: ", err)
 		}
 
 		fmt.Println("Database and table created")
 	} else if err != nil {
-		log.Fatal("Error checking db file: ", err)
+		log.Fatal("error checking db file: ", err)
 	}
 
 	db, err := sql.Open("sqlite3", dbFile)
 	if err != nil {
-		log.Fatal("Error opening db: ", err)
+		log.Fatal("error opening db: ", err)
 	}
 
 	return db

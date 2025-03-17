@@ -55,7 +55,7 @@ func TaskHandler(db *sql.DB) http.HandlerFunc {
 			var task services.Task
 			err := json.NewDecoder(r.Body).Decode(&task)
 			if err != nil {
-				http.Error(w, `{"error":"Issue of decoding JSON"}`, http.StatusBadRequest)
+				http.Error(w, `{"error":"issue of decoding JSON"}`, http.StatusBadRequest)
 			}
 			if task.ID == "" {
 				response := map[string]string{"error": "id of task omitted"}
