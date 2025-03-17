@@ -82,11 +82,11 @@ curl -i http://localhost:7540/api/tasks
 
 6. Структура проекта.
 
-/pkg
+```/pkg
  ├── /db         # Логика работы с БД (инициализация, запросы)
  ├── /handlers   # HTTP-обработчики API
  ├── /services   # Логика бизнес-правил (повторение задач)
 /tests      # Юнит-тесты
 /web             # Фронтенд файлы (HTML, CSS, JS)
 /main.go         # Точка входа
-/Dockerfile      # Файл с настройками Docker
+/Dockerfile      # Файл с настройками Docker```
